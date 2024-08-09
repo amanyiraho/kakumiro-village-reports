@@ -1,0 +1,60 @@
+parish,village,gps,lat,lon,HHnum,HHhead,HHtel,caregivers_name,caregivers_tel,caregivers_common,childs_name,childs_sex,childs_age,place_of_birth,place_of_birth_other
+Kyakuterekera,Dembe,1.0439591 31.3478157 1124.725 1153.07,1.0439591,31.3478157,037,Kamuwada Geoffrey,0740545610,NA,NA,NA,Nakiiza kandeke,female,56,health facility setting,NA
+Kyakuterekera,Kiterede,1.0641248 31.368966 1111.456 1.235,1.0641248,31.368966,069,Hakyiri peter,0773334599,Annet,NA,Hakyiri,Tumusiime sabit,male,8,other,Home
+Ijumangabo,Ijumangabo B,1.0307638 31.3310225 1165.6 4.933,1.0307638,31.3310225,009,Ahimbisibwe Alex,NA,Natukunda Annah,NA,Nyina wa Sharon,Ahimbisibwe,male,NA,traditional birth attendants,NA
+Kyakuterekera,Kiterede,1.059323 31.3631564 1181.622 2.14,1.059323,31.3631564,048,Byangashaka Gabriel,NA,Alinaitwe Feresite,NA,NA,Deus Dedeti,male,38,health facility setting,NA
+Kyakuterekera,Kiterede,1.0613821 31.3648626 1087.978 2.429,1.0613821,31.3648626,055,Kapulira Ignitius,0780933191,Kyalisima Elice,NA,NA,Shabohurira Joshua,male,6,other,Home
+Kyakuterekera,Kiterede,1.0615327 31.3649155 1080.897 1.665,1.0615327,31.3649155,056,Mizanyikuye Godfrey,NA,Munyazikuye Godfrey,NA,NA,NA,female,12,other,Home
+Ijumangabo,Ijumangabo A,1.0360644 31.3335928 1140.6 4.9,1.0360644,31.3335928,017,Byamukama denis,NA,Turyashemererwa jolly,NA,NA,Nabasa kelvin,male,10,other,Home
+Kyakuterekera,Kyakuterekera B,1.0599182 31.351995 1147.3 5.0,1.0599182,31.351995,002,Nabayaga Beatrice,NA,Nabayaga Beatrice,NA,Mama Alex,Ochom Alex,male,50,traditional birth attendants,NA
+Kyakuterekera,Kyakuterekera B,1.0599347 31.3517938 1259.4 5.0,1.0599347,31.3517938,005,Muhumuza Joshua,0778852010,Natamba Joan,0778852010,Mama Jassy,Ampire Jazela,female,10,traditional birth attendants,NA
+Kyakuterekera,Kiterede,1.0647325 31.3695052 1123.058 0.702,1.0647325,31.3695052,078,Loy,NA,Loy,NA,Loy,Aine primisi,female,36,health facility setting,NA
+Kyakuterekera,Kiterede,1.0688088 31.3636334 1123.058 4500.0,1.0688088,31.3636334,078,Loy,NA,Loy,NA,Loy,Magezi,male,24,health facility setting,NA
+Kyakuterekera,Tukundane,1.0509092 31.3530069 1134.952 1.202,1.0509092,31.3530069,086,Kyarigamba Vincent,0770579330,Mukangango Aidah,0770579330,Aidah,Seruwada Evans,male,41,health facility setting,NA
+Kyakuterekera,Tukundane,1.0630125 31.3539844 1103.6421400388 4400.0,1.0630125,31.3539844,058,Christine,0778231231,Nampulira udita,NA,NA,Katushabe Iren,female,8,health facility setting,NA
+Kyakuterekera,Nyakafunjo,1.0668681 31.353627 0.0 4099.999,1.0668681,31.353627,106,Sunday brovia,0778678025,Katusime sharon,NA,NA,Grace owomugisha,male,19,health facility setting,NA
+Kyakuterekera,Nyakafunjo,1.0668681 31.353627 0.0 4099.999,1.0668681,31.353627,106,Sunday brovia,0778678025,Katusime sharon,NA,NA,Beatrice namukisa,female,48,health facility setting,NA
+Ijumangabo,Ijumangabo B,1.032275 31.3303537 1148.3 5.0,1.032275,31.3303537,040,Ndahayo Daniel,NA,Kobusinge Bradina,NA,Kobusinge,Ayesiga Byaruhanga,male,42,traditional birth attendants,NA
+Kyakuterekera,Kyakuterekera B,1.0587449 31.3455534 1128.9 4.9,1.0587449,31.3455534,026,Nasonko Teopista,0777306750,Nasonko Teopista,0777306750,Nasonko,Kyagulanyi Robert,male,34,health facility setting,NA
+Kyakuterekera,Kyakuterekera B,1.0573839 31.3443322 1121.6 4.92,1.0573839,31.3443322,030,Bampigiire Fred,0763087150,Kefula Rosette,NA,Bampigiire,Bampigiire Alvin,male,30,other,Don't know
+Kyakuterekera,Kyakuterekera B,1.0573382 31.3443331 1117.8 4.76,1.0573382,31.3443331,030,Bampigiire Fred,0763087150,Kefula Rosette,NA,Bampigiire,Nshekaki Alvis,male,18,other,Don't know
+Kyakuterekera,Kyakuterekera B,1.0565353 31.3451189 1120.1 4.96,1.0565353,31.3451189,031,Byekwaso Zaveli,0776042676,Mugayehwenki Joventa,NA,Zaveli,Kemigisha Dorothy,female,14,health facility setting,NA
+Kyakuterekera,Kiyuni,1.0585973 31.3534381 1149.4 4.92,1.0585973,31.3534381,043,Namanya ramula,NA,Tusasibwe Rossetti,NA,Geoffrey,Ainembabazi namata,female,7,other,At home
+Kyakuterekera,Kiyuni,1.0497809 31.3599095 1145.8 4.84,1.0497809,31.3599095,044,Serugo zacerio,0760240018,Tusabe magret,NA,Zave,Daudi musinguzi,male,7,health facility setting,NA
+Kyakuterekera,Kiyuni,1.049767 31.3600259 1145.8 4.9,1.049767,31.3600259,044,Serugo zacerio,0760240018,Tusabe magret,NA,Zave,Daniel mwebesa,male,29,health facility setting,NA
+Ijumangabo,Kisenyi,1.0254421 31.3282669 1130.1 4.834,1.0254421,31.3282669,046,Ndabaharuye Jerome,0788411572,Mukabalasi Anonsiyata,NA,Jerome,Kipaye Dorika,female,30,health facility setting,NA
+Ijumangabo,Kisenyi,1.0242587 31.3255548 1209.4 4.4,1.0242587,31.3255548,064,Abomugisha Julius,NA,Natulinda moreen,0772971487,NA,Tumuramye Ester,female,38,other,Home
+Ijumangabo,Kisenyi,1.02425 31.3254583 1208.4 4.8,1.02425,31.3254583,064,Ahebwaomugisha Julius,NA,Natulinda moreen,NA,NA,Musa Tumukude,male,37,health facility setting,NA
+Kyakuterekera,Kyakuterekera A,0.7824492 31.32539 0.0 2400.0,0.7824492,31.32539,100,Habib Semiro,0775154277,Nakimbugwe,0782528272,Chair,Kabotongo,male,48,traditional birth attendants,NA
+Kyakuterekera,Nyakafunjo,1.106694 31.3516471 1094.5 5.88,1.106694,31.3516471,037,Turikumwe Dan,NA,Kirabo Faith,NA,NA,Aijuka Promise,female,38,health facility setting,NA
+Kyakuterekera,Nyakafunjo,1.1049482 31.3532546 1097.9 4.88,1.1049482,31.3532546,043,Turyasima Emmanuel,0770763244,Tumwebaze sefonia,NA,NA,Turyasiima Amosi,male,50,traditional birth attendants,NA
+Kyakuterekera,Kyakuterekera B,1.0599916 31.3470675 1138.3 4.96,1.0599916,31.3470675,186,Nyombi Yahaya,0786993544,Namara Shadia,0778580111,Nyombi,Ssenyong Shakul,male,23,other,Home
+Kyakuterekera,Nyakafunjo,1.1095052 31.3521213 1071.0 4.86,1.1095052,31.3521213,001,Byaruhanga Emmanuel,0762810023,Nazziwa Gertrude,0762810023,Emma,Sembusi Umar,male,48,health facility setting,NA
+Kyakuterekera,Nyakafunjo,1.1096124 31.3521132 1081.5 4.86,1.1096124,31.3521132,001,Byaruhanga Emmanuel,0762810023,Nazziwa Getrude,NA,NA,Nabukenya,female,23,health facility setting,NA
+Kyakuterekera,Nyakafunjo,1.1095761 31.3520979 1110.0 4.78,1.1095761,31.3520979,001,Byaruhanga Emmmanuel,0762810023,Mutuyimana Janata,NA,NA,Katusiime rose,female,34,health facility setting,NA
+Ijumangabo,Rweshengye,1.064753 31.3395778 1100.5 3.45,1.064753,31.3395778,022,Musimenta jane,0778974896,Musimenta jane,0778974896,Nalongo,Nuwagaba Richard,male,37,health facility setting,NA
+Kyakuterekera,Kiyuni,1.04971728 31.36038638 1141.7329978943 4.637,1.04971728,31.36038638,020,Amos asiimwe,0788810873,Janet twasima,0706671912,Amos,Amutihire mercy,female,37,health facility setting,NA
+Kyakuterekera,Tukundane,0.7829588 31.32539 0.0 2500.0,0.7829588,31.32539,001,Bigirwa Joseph,NA,Bigirwa Joseph,NA,Salongo,Anet,female,42,traditional birth attendants,NA
+Kyakuterekera,Kyakuterekera B,1.0597715 31.3518506 1163.2 4.9,1.0597715,31.3518506,005,Muhumuza Joshua,0778852010,Natamba Joan,0778852010,Mama Jassy,Akankunda Jassy,female,30,health facility setting,NA
+Kyakuterekera,Kyakuterekera B,1.0597731 31.3520513 1161.8 4.84,1.0597731,31.3520513,006,Turyasingura Gerald,NA,Nankunda Margret,NA,Mama Musinguzi,Musinguzi Gerald,male,30,health facility setting,NA
+Kyakuterekera,Tukundane,1.0422719 31.3556987 1156.6402301127687 3.266,1.0422719,31.3556987,039,Munyakisa John,NA,Teopista,NA,NA,Ainembabazi,female,49,health facility setting,NA
+Kyakuterekera,Tukundane,1.0421589 31.3556808 1158.4671779022688 15.0,1.0421589,31.3556808,040,NA,NA,Teopista,NA,NA,Moreen,female,48,health facility setting,NA
+Kyakuterekera,Tukundane,1.0450319 31.3549933 1144.6330224554854 3.9,1.0450319,31.3549933,052,Atuhire grace,0779716412,Grac,NA,NA,Tulyatunga Francis,male,24,health facility setting,NA
+Kyakuterekera,Tukundane,1.0463509 31.3518401 1103.6421400388 4199.999,1.0463509,31.3518401,058,Kyomukama christine,0778231234,Christiane,NA,Anna,Kukundakwe Caroline,female,52,traditional birth attendants,NA
+Kyakuterekera,Tukundane,1.0630125 31.3539844 1160.5224406547027 4400.0,1.0630125,31.3539844,058,Christine,0778231231,Irene,NA,NA,Ainebyona prity,female,43,health facility setting,NA
+Kyakuterekera,Nyakafunjo,1.0668681 31.353627 1117.601 4099.999,1.0668681,31.353627,109,Nyiranimana josephine,0785727385,Josephine,NA,NA,Mugisha samuel,male,48,health facility setting,NA
+Kyakuterekera,Kiyuni,1.0668681 31.353627 0.0 4099.999,1.0668681,31.353627,087,Muhimbise jonathan,0765021150,Katishabe immaculate,0760522536,Tumu,Ainomugisha peace,female,5,health facility setting,NA
+Ijumangabo,Kisenyi,1.0250778 31.3257113 1128.2 4.05,1.0250778,31.3257113,054,Nabasa Silver,0774347398,Ayebale Lilian,NA,Silver,Katusiime Princess,female,37,health facility setting,NA
+Kyakuterekera,Nyakafunjo,1.1042883 31.3535476 1113.2 4.98,1.1042883,31.3535476,047,Mediatris Mukampuhe,NA,Mediatris Mukampuhi,NA,NA,Lydia Muhoza,female,NA,health facility setting,NA
+Kyakuterekera,Nyakafunjo,1.0834078 31.349192 1124.6 4.96,1.0834078,31.349192,175,Ampire Baraka,0753726776,Babirye hadiya,0762580661,NA,Ampire Ryan,male,46,health facility setting,NA
+Kyakuterekera,Kyakuterekera A,1.0603968 31.3530207 1166.9423828125 17.688,1.0603968,31.3530207,083,Agaba Roger,0788269579,Kamikaze jacki,0761235556,Style,Musinguzi Asaf,male,1,health facility setting,NA
+Ijumangabo,Ijumangabo A,1.0392684 31.3314123 1133.0 4.716,1.0392684,31.3314123,023,Ibra bizimana,NA,Nalyiso zam,NA,NA,Natukunda shmira,female,1,health facility setting,NA
+Kyakuterekera,Dembe,1.0486166 31.3516201 1125.8 4.0,1.0486166,31.3516201,011,Muzuni Godfrey,0765152599,Kembabazi Mariam,NA,Marion,Amumpiire Mackline,female,50,health facility setting,NA
+Ijumangabo,Ijumangabo A,1.0391367 31.3301596 1129.0 9.0,1.0391367,31.330159600000002,035,Rukundo brain,NA,Tusingwire jairet,NA,NA,Ainembabazi brender,female,1,health facility setting,NA
+Kyakuterekera,Dembe,1.0497196 31.3449153 1144.847 1276.487,1.0497196,31.3449153,058,Elizabeth,NA,NA,NA,Mama glorry,Tumwesije Daniel,male,27,health facility setting,NA
+Kyakuterekera,Kyakuterekera A,1.0573113 31.3591049 1142.8397216796875 6.432,1.0573113,31.3591049,097,Ayesigye stephano,0761822975,Alinaitwe immaculate,0761192487,Omunyankole,Twiyikyirize Annatori,male,1,health facility setting,NA
+Kyakuterekera,Kiyuni,1.0586453 31.3535423 1145.8 4.95,1.0586453,31.3535423,043,Namanya ramula,NA,Tusasibwe Rossetti,NA,Geoffrey,Namutebi Florence,female,32,other,At home
+Kyakuterekera,Nyakafunjo,1.0881305 31.3568934 1121.0 4.833,1.0881305,31.3568934,084,Tibezinda Richard,0782924319,Katusabe  rovina,NA,NA,Kurabiraho marion,female,6,health facility setting,NA
+Kyakuterekera,Nyakafunjo,1.0863938 31.3564681 1112.8 4.821,1.0863938,31.3564681,086,Nimusiila joan,NA,Nimusiima,NA,NA,Daphine amutuhire,female,48,health facility setting,NA
+Kyakuterekera,Nyakafunjo,1.0847747 31.3566709 1119.1 4.9,1.0847747,31.3566709,089,Tumuhimbise jonan,0765970095,Alinaitwe Catherine,NA,NA,Twinomujuni Ambrose,male,42,health facility setting,NA
+Kyakuterekera,Kyakuterekera A,0.7794539 31.3214985 1325.0 95.19,0.7794539,31.3214985,045,Sekandi Robert,NA,Aunt patie,0775154277,Nalongo,Nagoya damuda,male,12,health facility setting,NA

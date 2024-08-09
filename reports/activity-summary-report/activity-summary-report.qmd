@@ -1,0 +1,258 @@
+---
+title: "Report"
+format: docx
+execute: 
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+library(tidyverse)
+```
+
+
+# Ijumangabo and Kyakuterekera Zero Dose activity summary report
+
+`r today()`
+
+```{r}
+data <-  read_csv(file ="./data/Kakumiro_House_to_House_registeration_2024_08_07_05_53_10_309929.csv",name_repair = "universal_quiet", na = "n/a" ) 
+```
+
+```{r}
+data_cleaned <- data |> 
+  unite("section2.q4_village", `section2.q4_village1`:`section2.q4_village2`, na.rm = TRUE) |> 
+  mutate(section2.q3_parish = str_to_title(section2.q3_parish ), 
+         section2.q4_village = str_to_title(section2.q4_village))
+
+data_filtered <- data_cleaned|> 
+  filter(section4.Q15_do == "yes")
+
+number_of_households <- 
+  
+```
+
+There are `r length(data_filtered$section2.q3_parish)` children in our eligible category (4 to 59 months) whose care givers were interviewed   
+
+We reached `r number_of_households` households 
+
+## Number of House holds per village
+
+```{r}
+data_cleaned |>  
+  group_by(section2.q4_village, section4.q12_hh_number) |> 
+  count() |> ungroup() |> 
+  count(section2.q4_village) |> 
+  ggplot(aes(x = fct_reorder(`section2.q4_village`, n), y = n) ) +
+  geom_col() +
+  coord_flip() +
+  geom_label(aes(label = n )) +
+  labs(
+    y = "Number of House holds", 
+    x = "Villages")
+```
+
+```{r}
+#data_filtered |>  
+#  count(section2.q4_village) |> 
+#  ggplot(aes(x = fct_reorder(`section2.q4_village`, n), y = n) ) +
+#  geom_col() +
+ # coord_flip() +
+#  geom_label(aes(label = n ))
+```
+
+## Number of Zero Dose children per village
+
+```{r}
+
+## Said No; i.e they didn't vaccinate
+zd_said_no <- data_filtered |> 
+  filter(`section6.q26_past` == "no")
+```
+
+```{r}
+## Said Yes; i.e they vaccinated but withno card and didn't mention the thighs as part
+
+zd_said_yes_card_no_thigh_no <- data_filtered |> 
+  filter(`section6.q26_past` == "yes" & `section6.q28_card` == "no" & ask.q31.thigh == FALSE)
+```
+
+```{r}
+
+## Said Yes; i.e they vaccinated, they have a card but don't have DPT1, DPT2, DPT3
+zd_said_yes_card_yes_dpts_no <- data_filtered |> 
+  filter(`section6.q26_past` == "yes") |>  
+  filter(q28_infor.q28_dpt1 != "yes") |> 
+  filter(q28_infor.q28_dpt2 != "yes") |> 
+  filter(q28_infor.q28_dpt3 != "yes")
+```
+
+```{r}
+data_zd_indvidual <- bind_rows(zd_said_no, zd_said_yes_card_no_thigh_no, zd_said_yes_card_yes_dpts_no) 
+
+
+data_zd <- data_zd_indvidual |> 
+  count(section2.q4_village) 
+```
+
+There are `r sum(data_zd$n)` Zero dose children in identified 
+
+```{r}
+data_zd |> 
+  ggplot(aes(x = fct_reorder(`section2.q4_village`, n), y = n) ) +
+  geom_col() +
+  coord_flip() +
+  geom_label(aes(label = n )) +
+    labs(
+    y = "Number of Zero Dose children", 
+    x = "Villages"
+  )
+```
+
+```{r}
+  zd_geospatial <- data_zd_indvidual |> select(section2.q3_parish, section2.q4_village, section2.q6_gps, section2._q6_gps_latitude, section2._q6_gps_longitude, section4.q12_hh_number, section4.q13_holdhead, section4.q14_contact, sectionfive.q16_care,sectionfive.q17_tel, sectionfive.q18_common, would.q21_child, would.q22_sex, would.q24_age_in_months,would.q23_was_born, would.q25_place,would.other1) |>
+    rename("parish" = section2.q3_parish, "village" = section2.q4_village, "gps" = section2.q6_gps, "lat" = section2._q6_gps_latitude, "lon" = section2._q6_gps_longitude,"HHnum" = section4.q12_hh_number, "HHhead" = section4.q13_holdhead, "HHtel" = section4.q14_contact, "caregivers_name" = sectionfive.q16_care,"caregivers_tel" = sectionfive.q17_tel, "caregivers_common" = sectionfive.q18_common, "childs_name" = would.q21_child, "childs_sex" = would.q22_sex, "childs_age" = would.q24_age_in_months,"childs_DOB" = would.q23_was_born, "place_of_birth" = would.q25_place, "place_of_birth_other" = would.other1)
+# 
+# 
+# write_csv(zd_geospatial, "./data/geospatial-data.csv")
+```
+
+```{r}
+#flextable(zd_geospatial)
+```
+
+# How about underimmunised children?
+
+```{r}
+change_to_number <- function(x){case_when(x == "yes" ~ 0, x == "no" ~ 1, is.na(x) ~ 1)}
+
+data_with_cards <- data_filtered |>
+    filter(section6.q28_card == "yes") 
+
+
+number_with_cards <- nrow(data_with_cards)
+```
+
+To determine under-immunized children, we shall only focus on `r number_with_cards` children who had  `child health cards`  
+
+
+```{r}
+underimmunised_by_antigen_long <- data_with_cards |> 
+  select(c(section2.q3_parish, section2.q4_village, section2.q6_gps, section2._q6_gps_latitude, section2._q6_gps_longitude, section4.q12_hh_number, section4.q13_holdhead, section4.q14_contact, sectionfive.q16_care,sectionfive.q17_tel, sectionfive.q18_common, would.q21_child, would.q22_sex, would.q24_age_in_months,would.q23_was_born, would.q25_place,would.other1), c(q28_infor.q28_bcg:q28_infor.q28_mr2 )) |>
+    rename("parish" = section2.q3_parish, "village" = section2.q4_village, "gps" = section2.q6_gps, "lat" = section2._q6_gps_latitude, "lon" = section2._q6_gps_longitude,"HHnum" = section4.q12_hh_number, "HHhead" = section4.q13_holdhead, "HHtel" = section4.q14_contact, "caregivers_name" = sectionfive.q16_care,"caregivers_tel" = sectionfive.q17_tel, "caregivers_common" = sectionfive.q18_common, "childs_name" = would.q21_child, "childs_sex" = would.q22_sex, "childs_age" = would.q24_age_in_months,"childs_DOB" = would.q23_was_born, "place_of_birth" = would.q25_place, "place_of_birth_other" = would.other1)
+```
+
+
+
+
+
+```{r}
+underimmunised_by_antigen_long_clean <- underimmunised_by_antigen_long |> 
+  select(c(c(q28_infor.q28_bcg:q28_infor.q28_mr2),
+           childs_age, childs_DOB )) |> 
+  mutate(age = interval(childs_DOB, dmy("31-07-2024")) %/% months(1), 
+         childs_age = case_when(is.na(childs_age)~ age, 
+                                .default = childs_age)) |> 
+  
+  filter(childs_age > 3.9) |> 
+  mutate(age_cat = case_when(childs_age >= 18 ~ "elig_MR2",
+                             childs_age >= 9 ~ "elig_MR1",
+                             childs_age >= 4 ~ "elig_BCG_DPT")) |> 
+  select(-c( childs_DOB,age, childs_age)) 
+
+### Some children were record to be 
+
+children_with_cards <- underimmunised_by_antigen_long_clean|> 
+  count(age_cat)
+ 
+```
+
+
+```{r}
+change_to_number <- function(x){case_when(x == "yes" ~ T, x == "no" ~ F, is.na(x) ~ F)}
+
+## Eligible to BCG to DPT1 
+underimmunised_by_antigen_long_clean |>
+   mutate(across(q28_infor.q28_bcg:q28_infor.q28_mr2, change_to_number)) |> 
+  group_by(age_cat) |> 
+  summarise(across(q28_infor.q28_bcg:q28_infor.q28_mr2, sum)) |> 
+pivot_longer(q28_infor.q28_bcg:q28_infor.q28_mr2,names_to = "antigen",  values_to = "immunised")|>
+  mutate(antigen  = str_remove(antigen, "q28_infor.q28_")) |> 
+  filter(antigen %in% c("bcg","dpt1", "dpt3", "mr1", "mr2" )) |> 
+  
+  mutate(antigen  = str_to_upper(antigen), 
+         number_with_cards = case_when(antigen == "BCG" ~ 740,
+                                       antigen == "DPT1" ~ 740,
+                                       antigen == "DPT3" ~ 740,
+                                       antigen == "MR1" ~ 657,
+                                       antigen == "MR2" ~ 537), 
+         underimmunised = number_with_cards - immunised ) 
+         percent_underimmunised = round((underimmunised/number_with_cards)*100, 2))
+```
+
+
+```{r}
+write_csv(underimmunised_by_antigen, "./data/underimmunised_by_antigen.csv")
+
+
+underimmunised_by_antigen |> 
+  ggplot(aes(x = antigen, y = underimmunised)) +
+  geom_col() +
+  ylim(c(0, 800))+
+  geom_label(aes(label =  underimmunised)) +
+   labs(
+    y = "number of underimmunised", 
+    x = "Antigen")
+
+```
+
+
+## Reasons for Zero dose and under-immunised
+
+
+```{r}
+data_reasons1 <- data_filtered |> 
+  filter(section6.q26_past == "no") |> 
+  select(section6.q32_3.Religious_beliefs:section6.q32_3.too_many_vaccine_injections) |> 
+  summarise(across(section6.q32_3.Religious_beliefs:section6.q32_3.too_many_vaccine_injections, sum, na.rm = T)) |> pivot_longer(section6.q32_3.Religious_beliefs:section6.q32_3.too_many_vaccine_injections,names_to = "reasons",  values_to = "total") |> mutate(reasons  = str_remove(reasons, "section6.q32_3.")) |> arrange(desc(total))
+  
+
+data_reasons2 <- data_filtered |> 
+  filter(q28_infor.q28 == "no") |> 
+  select(q28_infor.q32_2.Religious_beliefs:q28_infor.q32_2.too_many_vaccine_injections) |> 
+ summarise(across(q28_infor.q32_2.Religious_beliefs:q28_infor.q32_2.too_many_vaccine_injections, sum, na.rm = T)) |> pivot_longer(q28_infor.q32_2.Religious_beliefs:q28_infor.q32_2.too_many_vaccine_injections,names_to = "reasons",  values_to = "total") |> mutate(reasons  = str_remove(reasons, "q28_infor.q32_2.")) |> arrange(desc(total))
+
+
+data_reasons3 <- data_filtered |> 
+   filter(section6.q28_card == "no") |> 
+  select(ask.q32.Religious_beliefs:ask.q32.too_many_vaccine_injections) |> 
+  summarise(across(ask.q32.Religious_beliefs:ask.q32.too_many_vaccine_injections, sum, na.rm = T)) |>     pivot_longer(ask.q32.Religious_beliefs:ask.q32.too_many_vaccine_injections, names_to = "reasons",  values_to = "total") |> mutate(reasons  = str_remove(reasons, "ask.q32.")) |> arrange(desc(total))
+
+bind_rows(data_reasons1,data_reasons2, data_reasons3) |> 
+  group_by(reasons) |> 
+  summarise(total = sum(total)) |> 
+  mutate(reasons = str_replace_all(reasons, "_", " "), 
+         reasons = str_replace_all(reasons, "\\.", " "),
+         reasons = str_to_sentence(reasons), 
+         reasons = str_wrap(reasons, width = 35)) |> 
+  top_n(10, total) |> 
+  ggplot(aes(x = fct_reorder(reasons, total), y = total)) +
+  geom_col() +
+  geom_label(aes(label =  total))+
+  coord_flip() +
+    labs(
+    x = "Reasons", 
+    y = "Number of times mentioned")
+
+
+```
+## How many Zero dose and under-immunised have been vaccinated during the H2H registeration (Saturady to Tuesday)
+
+**(If not what are reasons for those who have not yet vaccinated)**
+
+## Recommendations
+
+## Action plan
+
+
