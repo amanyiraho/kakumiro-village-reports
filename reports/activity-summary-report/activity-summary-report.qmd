@@ -8,7 +8,48 @@ execute:
 ---
 
 ```{r}
+
+setwd("C:/Users/Gk Coordinator/Desktop/r-projects/kakumiro-village-reports/reports/activity-summary-report/")
+library(UBOSpopulation)
+library(UNEPItargets)
 library(tidyverse)
+library(scales)
+library(showtext)
+library(svglite)
+library(ggrepel)
+
+
+font_add_google("Roboto", family = "Roboto")
+
+
+font_add_google("Lora", family = "Lora")
+
+
+font_add_google("Roboto Mono", "Roboto Mono")
+
+showtext_auto()
+
+grey_lighter <- "#dee0e3"
+grey_light <- "#888A8C"
+grey_dark <- "#939598"
+blue_dark <- "#144673"
+red_dark <- "#852922"
+green_dark <- "#097061"
+
+theme_stroytelling_bar <- function(){ 
+  theme_classic()+
+  theme(axis.text = element_text(family = "Roboto Mono", size = 12, colour = "#888A8C"),
+            axis.ticks = element_line(colour = grey_light),
+            axis.title = element_text(family = "Roboto",  size = 15, colour = grey_light),
+            axis.line = element_line(colour = grey_light),
+            plot.caption = element_text(family = "Roboto",  size = 11, colour = grey_light),
+            legend.text = element_text(colour = grey_light),
+            legend.title = element_text(colour = grey_light, face = "bold"),
+            legend.position = "none",
+            plot.subtitle =  element_text(family = "Roboto",  size = 20, colour = grey_light),
+            plot.title  = element_text(family = "Roboto",  size = 30, colour = "#585859"))
+}
+
 ```
 
 
@@ -27,9 +68,16 @@ data_cleaned <- data |>
          section2.q4_village = str_to_title(section2.q4_village))
 
 data_filtered <- data_cleaned|> 
-  filter(section4.Q15_do == "yes")
+  filter(section4.Q15_do == "yes") |>
+   mutate(age = interval(would.q23_was_born, dmy("31-07-2024")) %/% months(1), 
+          age = case_when(!between(age, 4, 59) ~ would.q24_age_in_months,
+                          .default = age)) |>
+  filter(between(age, 4, 59) )
 
-number_of_households <- 
+number_of_households <-  data_cleaned |>  
+  group_by(section2.q4_village, section4.q12_hh_number) |> 
+  count() |> ungroup() |> 
+  count(section2.q4_village) |> pull(n) |> sum()
   
 ```
 
@@ -45,22 +93,112 @@ data_cleaned |>
   count() |> ungroup() |> 
   count(section2.q4_village) |> 
   ggplot(aes(x = fct_reorder(`section2.q4_village`, n), y = n) ) +
-  geom_col() +
+  geom_col(fill = grey_dark) +
   coord_flip() +
   geom_label(aes(label = n )) +
   labs(
     y = "Number of House holds", 
-    x = "Villages")
+    x = "Villages") +
+  theme_stroytelling_bar()
+
+#ggsave(filename = "Number of HH per village.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
 ```
+## Mwitanzige and District performance for the last 3 year
 
 ```{r}
-#data_filtered |>  
-#  count(section2.q4_village) |> 
-#  ggplot(aes(x = fct_reorder(`section2.q4_village`, n), y = n) ) +
-#  geom_col() +
- # coord_flip() +
-#  geom_label(aes(label = n ))
+district_sc_data <- read_csv("data/Kakumiro and Mwitanzige SC- DPT1 and MR2 FY2324-2.csv")|>
+  mutate(month = my(month))
 ```
+
+### DPT1 coverage
+
+```{r}
+  ggplot() +
+  geom_line(data = district_sc_data, mapping = aes(x = month, y = DPT1, colour = orgunit), linewidth = 1, lineend = "round") +
+  geom_hline(yintercept = c(100), linetype = "dashed", color = grey_light )+
+  geom_point(data = district_sc_data |> filter(month == dmy("01062024")),
+             aes(x= month, y = DPT1, colour = orgunit)) +
+  geom_text(data =district_sc_data |> filter(orgunit == "Mwitanzige Subcounty" & DPT1 < 100), 
+            mapping = aes(x= month , y = DPT1, label = glue::glue("{DPT1}%"), colour = orgunit),
+            nudge_y = - 5, size = 5, family = "Roboto Mono") +
+    geom_text(data =district_sc_data |> filter(orgunit == "Mwitanzige Subcounty" & DPT1 > 150), 
+            mapping = aes(x= month , y = DPT1, label = glue::glue("{DPT1}%"), colour = orgunit),
+            nudge_y = 5, size = 5, family = "Roboto Mono")+
+  theme_classic() +
+  scale_color_manual(values = c("Mwitanzige Subcounty" = blue_dark,
+                                 "Kakumiro District" = grey_dark)) + 
+    scale_x_date(date_breaks = "2 months",date_labels = "%b%y",
+                 limits = c(dmy("01012022"), dmy("01072024")))+
+    scale_y_continuous(labels = scales::percent_format(scale = 1,accuracy = 1), limits = c(0, NA) ) +
+    labs(x = "Period",
+         y = "DPT1 Coverage",
+         caption = "Data source: DHIS2 07/08/2024",
+         title = NULL,
+         subtitle = NULL) +
+theme_stroytelling_bar()
+  
+#ggsave(filename = "DPT1-coverage.svg", device = "svg", width = 36, height = 18, units = "cm" )  
+
+```
+
+## MR 1 Coverage
+
+```{r}
+
+  ggplot() +
+    geom_line(data = district_sc_data, mapping = aes(x = month, y = MR1, colour = orgunit), linewidth = 1, lineend = "round") +
+    geom_hline(yintercept = c(100), linetype = "dashed", color = grey_light )+
+    geom_point(data = district_sc_data |> filter(month == dmy("01062024")),
+               aes(x= month, y = MR1, colour = orgunit)) +
+   geom_text(data =district_sc_data |> filter(orgunit == "Mwitanzige Subcounty" & MR1 < 100), 
+            mapping = aes(x= month , y = MR1, label = glue::glue("{MR1}%"), colour = orgunit), size = 5, nudge_y = -15, family = "Roboto Mono") +
+    geom_text_repel(data =district_sc_data |> filter(orgunit == "Mwitanzige Subcounty" & MR1 > 250), 
+            mapping = aes(x= month , y = MR1, label = glue::glue("{MR1}%"), colour = orgunit), size = 5, nudge_y = 15, family = "Roboto Mono")+
+    theme_classic() +
+    scale_color_manual(values = c("Mwitanzige Subcounty" = blue_dark,
+                                  "Kakumiro District" = grey_dark)) + 
+    scale_x_date(date_breaks = "2 months",date_labels = "%b%y",
+                 limits = c(dmy("01012022"), dmy("01072024")))+
+    scale_y_continuous(labels = scales::percent_format(scale = 1,accuracy = 1, big.mark = ","), limits = c(0, 1500) ) +
+    labs(x = "Period",
+         y = "MR1 Coverage",
+         caption = "Data source: DHIS2 07/08/2024",
+         title = NULL,
+         subtitle = NULL) +
+  theme_stroytelling_bar()
+  
+ # ggsave(filename = "MR1-coverage.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
+```
+
+## MR 2 Coverage
+
+```{r}
+
+  ggplot() +
+    geom_line(data = district_sc_data, mapping = aes(x = month, y = MR2, colour = orgunit), linewidth = 1, lineend = "round") +
+    geom_hline(yintercept = c(100), linetype = "dashed", color = grey_light )+
+    geom_point(data = district_sc_data |> filter(month %in% dmy(c("01062024", "01082022", "01102022"))),
+               aes(x= month, y = MR2, colour = orgunit)) +
+   geom_text(data =district_sc_data |> filter(orgunit == "Mwitanzige Subcounty" & MR2 < 100), 
+            mapping = aes(x= month , y = MR2, label = glue::glue("{MR2}%"), colour = orgunit), size = 5, nudge_y = -15, family = "Roboto Mono") +
+    geom_text_repel(data =district_sc_data |> filter(orgunit == "Mwitanzige Subcounty" & MR2 > 250), 
+            mapping = aes(x= month , y = MR2, label = glue::glue("{MR2}%"), colour = orgunit), size = 5, nudge_y = 15, family = "Roboto Mono")+
+    theme_classic() +
+    scale_color_manual(values = c("Mwitanzige Subcounty" = blue_dark,
+                                  "Kakumiro District" = grey_dark)) + 
+    scale_x_date(date_breaks = "2 months",date_labels = "%b%y",
+                 limits = c(dmy("01012022"), dmy("01072024")))+
+    scale_y_continuous(labels = scales::percent_format(scale = 1,accuracy = 1, big.mark = ","), limits = c(0, 1500) ) +
+    labs(x = "Period",
+         y = "MR2 Coverage",
+         caption = "Data source: DHIS2 07/08/2024",
+         title = NULL,
+         subtitle = NULL) +
+  theme_stroytelling_bar()
+  
+#ggsave(filename = "MR2-coverage.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
+```
+
 
 ## Number of Zero Dose children per village
 
@@ -69,16 +207,15 @@ data_cleaned |>
 ## Said No; i.e they didn't vaccinate
 zd_said_no <- data_filtered |> 
   filter(`section6.q26_past` == "no")
-```
 
-```{r}
 ## Said Yes; i.e they vaccinated but withno card and didn't mention the thighs as part
 
 zd_said_yes_card_no_thigh_no <- data_filtered |> 
   filter(`section6.q26_past` == "yes" & `section6.q28_card` == "no" & ask.q31.thigh == FALSE)
-```
 
-```{r}
+
+zd_said_no_cards <- data_filtered |>
+    filter(section6.q28_card == "no") 
 
 ## Said Yes; i.e they vaccinated, they have a card but don't have DPT1, DPT2, DPT3
 zd_said_yes_card_yes_dpts_no <- data_filtered |> 
@@ -86,49 +223,153 @@ zd_said_yes_card_yes_dpts_no <- data_filtered |>
   filter(q28_infor.q28_dpt1 != "yes") |> 
   filter(q28_infor.q28_dpt2 != "yes") |> 
   filter(q28_infor.q28_dpt3 != "yes")
-```
+#data_zd_indvidual <- bind_rows(zd_said_no, zd_said_yes_card_no_thigh_no, zd_said_yes_card_yes_dpts_no) 
 
-```{r}
-data_zd_indvidual <- bind_rows(zd_said_no, zd_said_yes_card_no_thigh_no, zd_said_yes_card_yes_dpts_no) 
+data_zd_indvidual <- bind_rows(zd_said_no, zd_said_no_cards, zd_said_yes_card_yes_dpts_no) 
 
 
 data_zd <- data_zd_indvidual |> 
-  count(section2.q4_village) 
+  group_by(section2.q3_parish, section2.q4_village ) |> 
+  count() |> 
+  ungroup()
 ```
 
 There are `r sum(data_zd$n)` Zero dose children in identified 
 
 ```{r}
-data_zd |> 
-  ggplot(aes(x = fct_reorder(`section2.q4_village`, n), y = n) ) +
+
+  ggplot(data = data_zd, mapping = aes(x = fct_reorder(`section2.q4_village`, n), y = n, fill = `section2.q3_parish`) ) +
   geom_col() +
+  scale_fill_manual(values = c("Kyakuterekera" = red_dark,
+                                "Ijumangabo" = grey_lighter)) + 
   coord_flip() +
-  geom_label(aes(label = n )) +
+  geom_label(data = data_zd |> filter(section2.q3_parish == "Kyakuterekera"), 
+             mapping = aes(label = n ), size = 4, family = "Roboto Mono", color = "white") +
+    geom_label(data = data_zd |> filter(section2.q3_parish == "Ijumangabo"), 
+             mapping = aes(label = n ), size = 4, family = "Roboto Mono", color = "black") +
     labs(
     y = "Number of Zero Dose children", 
-    x = "Villages"
-  )
+    x = "Villages") +
+    theme_stroytelling_bar()
+
+   #ggsave(filename = "ZD by village.svg", device = "svg", width = 36, height = 18, units = "cm" )
 ```
+## Analysis of the Zero Dose children
 
 ```{r}
-  zd_geospatial <- data_zd_indvidual |> select(section2.q3_parish, section2.q4_village, section2.q6_gps, section2._q6_gps_latitude, section2._q6_gps_longitude, section4.q12_hh_number, section4.q13_holdhead, section4.q14_contact, sectionfive.q16_care,sectionfive.q17_tel, sectionfive.q18_common, would.q21_child, would.q22_sex, would.q24_age_in_months,would.q23_was_born, would.q25_place,would.other1) |>
+zd_geospatial <- data_zd_indvidual |> select(section2.q3_parish, section2.q4_village, section2.q6_gps, section2._q6_gps_latitude, section2._q6_gps_longitude, section4.q12_hh_number, section4.q13_holdhead, section4.q14_contact, sectionfive.q16_care,sectionfive.q17_tel, sectionfive.q18_common, would.q21_child, would.q22_sex, would.q24_age_in_months,would.q23_was_born, would.q25_place,would.other1) |>
     rename("parish" = section2.q3_parish, "village" = section2.q4_village, "gps" = section2.q6_gps, "lat" = section2._q6_gps_latitude, "lon" = section2._q6_gps_longitude,"HHnum" = section4.q12_hh_number, "HHhead" = section4.q13_holdhead, "HHtel" = section4.q14_contact, "caregivers_name" = sectionfive.q16_care,"caregivers_tel" = sectionfive.q17_tel, "caregivers_common" = sectionfive.q18_common, "childs_name" = would.q21_child, "childs_sex" = would.q22_sex, "childs_age" = would.q24_age_in_months,"childs_DOB" = would.q23_was_born, "place_of_birth" = would.q25_place, "place_of_birth_other" = would.other1)
 # 
 # 
 # write_csv(zd_geospatial, "./data/geospatial-data.csv")
 ```
 
+
+
 ```{r}
-#flextable(zd_geospatial)
+## Zero dose of Mwitanzige subcounty for the Last 5 years
+subcounty_zd_before <- read_csv("data/ZD in mwitanzige 2021 - 2024.csv") |> 
+    mutate(period = factor(period)) |> 
+    filter(orgunit == "Mwitanzige Subcounty")
+
+#### ZD children found
+  
+   
+ zd_children_cleaned <-   zd_geospatial |> 
+     select(- c(gps,  lat,   lon, HHhead , HHtel, caregivers_name ,caregivers_tel ,caregivers_common)) |> 
+     mutate(YOB = as.factor(year(childs_DOB)),
+       age = interval(childs_DOB, dmy("31-07-2024")) %/% months(1)) |>
+     filter(age >= 4) |> 
+     select(-c(HHnum, childs_name, childs_age, childs_DOB))
+ 
+zd_data_by_year <-  zd_children_cleaned |> 
+   count(YOB, name = "ZD_identified") |> 
+   left_join( subcounty_zd_before, by = c("YOB" = "period")) 
+
+   ggplot()+
+   geom_col(data = zd_data_by_year, aes(x = YOB, y = ZD), fill = grey_lighter) +
+   geom_col(data = zd_data_by_year, aes(x = YOB, y = ZD_identified), fill = blue_dark)+
+   geom_label(data =zd_data_by_year, mapping = aes(x= YOB , y = ZD, label = ZD), size = 4, family = "Roboto Mono", color = grey_light) +
+     geom_label(data =zd_data_by_year, mapping = aes(x= YOB , y = ZD_identified, label = ZD_identified), size = 4, family = "Roboto Mono", color = blue_dark) +
+   theme_classic() +
+   geom_hline(yintercept = 0, linetype = "solid", color = "black" )+
+   scale_fill_manual(values = c("pos" = red_dark,
+                                "neg" = grey_dark)) + 
+   scale_y_continuous( limits = c(-200, 100) ) +
+   labs(x = "Year",
+        y = "Number of ZD",
+        caption = "Data source: DHIS2 & H2H registeration 07/08/2024",
+        title = NULL,
+        subtitle = NULL) +
+   theme(axis.text = element_text(family = "Roboto Mono", size = 12, colour = "#888A8C"),
+         axis.ticks = element_line(colour = grey_light),
+         axis.title = element_text(family = "Roboto",  size = 15, colour = grey_light),
+         axis.line = element_line(colour = grey_light),
+         plot.caption = element_text(family = "Roboto",  size = 11, colour = grey_light),
+         legend.text = element_text(colour = grey_light),
+         legend.title = element_text(colour = grey_light, face = "bold"),
+         legend.position = "none",
+         plot.subtitle =  element_text(family = "Roboto",  size = 20, colour = grey_light),
+         plot.title  = element_text(family = "Roboto",  size = 30, colour = "#585859"))
+   
+ #  ggsave(filename = "ZD by year- Mwitanzige.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
+   
 ```
+## Zero dose by Place of Birth
+
+```{r}
+
+zd_by_place_birth <- zd_children_cleaned |> 
+  mutate(place_of_birth = 
+           case_when(place_of_birth == "other" ~ place_of_birth_other,.default = place_of_birth)) |> 
+ select(-place_of_birth_other) |> 
+ count(place_of_birth) |> 
+ mutate(place_of_birth = str_to_title(place_of_birth),
+        place_of_birth = case_when(str_detect(place_of_birth, "Home") ~ "Home", 
+                                   is.na(place_of_birth) ~ "Don't Know",
+                                   .default = place_of_birth )) |> 
+  group_by(place_of_birth) |> 
+  summarise(n = sum(n)) |> 
+  mutate(status = case_when(place_of_birth %in% c("Traditional Birth Attendants", "Home") ~ "pos", 
+                                   .default = "neg"),
+         place_of_birth = str_wrap(place_of_birth, width = 10, whitespace_only = F, exdent = 0))
+
+
+
+ ggplot() +
+ geom_col(data = zd_by_place_birth , aes(x = reorder(place_of_birth, desc(n)), y = n, fill =status)) +
+ geom_label(data =zd_by_place_birth , mapping = aes(x = place_of_birth, y = n, label = n), size = 5, family = "Roboto Mono", color = grey_dark) +
+ theme_classic() +
+ scale_fill_manual(values = c("pos" = red_dark,
+                              "neg" = grey_lighter)) + 
+ scale_y_continuous( limits = c(0, 200) ) +
+ 
+ labs(x = "Place of Birth",
+      y = "Number of ZD",
+      caption = "Data source: H2H registeration 07/08/2024",
+      title = NULL,
+      subtitle = NULL) +
+theme_stroytelling_bar()
+     
+   #  ggsave(filename = "ZD by Place of Birth- Mwitanzige.svg", device = "svg", width = 36, height = 18, units = "cm" )     
+     
+```
+
 
 # How about underimmunised children?
 
 ```{r}
 change_to_number <- function(x){case_when(x == "yes" ~ 0, x == "no" ~ 1, is.na(x) ~ 1)}
 
-data_with_cards <- data_filtered |>
-    filter(section6.q28_card == "yes") 
+
+data_card_cleaned <- data_filtered |>
+  mutate(section6.q28_card = case_when(is.na(section6.q28_card) ~ "no", 
+                                       .default = section6.q28_card))
+data_with_cards <- data_card_cleaned |> 
+                    filter(section6.q28_card == "yes") 
+
+data_with_cards_no <-  data_card_cleaned  |>
+    filter(section6.q28_card == "no")
 
 
 number_with_cards <- nrow(data_with_cards)
@@ -138,9 +379,9 @@ To determine under-immunized children, we shall only focus on `r number_with_car
 
 
 ```{r}
-underimmunised_by_antigen_long <- data_with_cards |> 
-  select(c(section2.q3_parish, section2.q4_village, section2.q6_gps, section2._q6_gps_latitude, section2._q6_gps_longitude, section4.q12_hh_number, section4.q13_holdhead, section4.q14_contact, sectionfive.q16_care,sectionfive.q17_tel, sectionfive.q18_common, would.q21_child, would.q22_sex, would.q24_age_in_months,would.q23_was_born, would.q25_place,would.other1), c(q28_infor.q28_bcg:q28_infor.q28_mr2 )) |>
-    rename("parish" = section2.q3_parish, "village" = section2.q4_village, "gps" = section2.q6_gps, "lat" = section2._q6_gps_latitude, "lon" = section2._q6_gps_longitude,"HHnum" = section4.q12_hh_number, "HHhead" = section4.q13_holdhead, "HHtel" = section4.q14_contact, "caregivers_name" = sectionfive.q16_care,"caregivers_tel" = sectionfive.q17_tel, "caregivers_common" = sectionfive.q18_common, "childs_name" = would.q21_child, "childs_sex" = would.q22_sex, "childs_age" = would.q24_age_in_months,"childs_DOB" = would.q23_was_born, "place_of_birth" = would.q25_place, "place_of_birth_other" = would.other1)
+underimmunised_by_antigen_long <- data_card_cleaned |> 
+  select(c(section2.q3_parish, section2.q4_village, section2.q6_gps, section2._q6_gps_latitude, section2._q6_gps_longitude, section4.q12_hh_number, section4.q13_holdhead, section4.q14_contact, sectionfive.q16_care,sectionfive.q17_tel, sectionfive.q18_common, would.q21_child, would.q22_sex, would.q25_place,would.other1), c(q28_infor.q28_bcg:q28_infor.q28_mr2 ), age ) |>
+    rename("parish" = section2.q3_parish, "village" = section2.q4_village, "gps" = section2.q6_gps, "lat" = section2._q6_gps_latitude, "lon" = section2._q6_gps_longitude,"HHnum" = section4.q12_hh_number, "HHhead" = section4.q13_holdhead, "HHtel" = section4.q14_contact, "caregivers_name" = sectionfive.q16_care,"caregivers_tel" = sectionfive.q17_tel, "caregivers_common" = sectionfive.q18_common, "childs_name" = would.q21_child, "childs_sex" = would.q22_sex, "place_of_birth" = would.q25_place, "place_of_birth_other" = would.other1)
 ```
 
 
@@ -149,22 +390,16 @@ underimmunised_by_antigen_long <- data_with_cards |>
 
 ```{r}
 underimmunised_by_antigen_long_clean <- underimmunised_by_antigen_long |> 
-  select(c(c(q28_infor.q28_bcg:q28_infor.q28_mr2),
-           childs_age, childs_DOB )) |> 
-  mutate(age = interval(childs_DOB, dmy("31-07-2024")) %/% months(1), 
-         childs_age = case_when(is.na(childs_age)~ age, 
-                                .default = childs_age)) |> 
-  
-  filter(childs_age > 3.9) |> 
-  mutate(age_cat = case_when(childs_age >= 18 ~ "elig_MR2",
-                             childs_age >= 9 ~ "elig_MR1",
-                             childs_age >= 4 ~ "elig_BCG_DPT")) |> 
-  select(-c( childs_DOB,age, childs_age)) 
+  select(c(c(q28_infor.q28_bcg:q28_infor.q28_mr2), age )) |> 
+  mutate(age_cat = case_when(age >= 18 ~ "elig_MR2",
+                             age >= 9 ~ "elig_MR1",
+                             age >= 4 ~ "elig_BCG_DPT")) |> 
+  select(-age) 
 
 ### Some children were record to be 
 
-children_with_cards <- underimmunised_by_antigen_long_clean|> 
-  count(age_cat)
+children_with_cards_df <- underimmunised_by_antigen_long_clean|> 
+  count(age_cat) 
  
 ```
 
@@ -173,38 +408,91 @@ children_with_cards <- underimmunised_by_antigen_long_clean|>
 change_to_number <- function(x){case_when(x == "yes" ~ T, x == "no" ~ F, is.na(x) ~ F)}
 
 ## Eligible to BCG to DPT1 
-underimmunised_by_antigen_long_clean |>
+underimmunised_by_antigen_long_clean2 <- underimmunised_by_antigen_long_clean |>
    mutate(across(q28_infor.q28_bcg:q28_infor.q28_mr2, change_to_number)) |> 
-  group_by(age_cat) |> 
-  summarise(across(q28_infor.q28_bcg:q28_infor.q28_mr2, sum)) |> 
+  group_by(age_cat) |>
+  summarise(across(q28_infor.q28_bcg:q28_infor.q28_mr2, sum)) |>
 pivot_longer(q28_infor.q28_bcg:q28_infor.q28_mr2,names_to = "antigen",  values_to = "immunised")|>
-  mutate(antigen  = str_remove(antigen, "q28_infor.q28_")) |> 
-  filter(antigen %in% c("bcg","dpt1", "dpt3", "mr1", "mr2" )) |> 
+  mutate(antigen  = str_remove(antigen, "q28_infor.q28_"))
   
+underimmunised_by_antigen_elig_bcg_dpts <- underimmunised_by_antigen_long_clean2 |> 
+  filter(antigen %in% c("bcg","dpt1", "dpt3" )) |> 
+  group_by(antigen) |> 
+  summarise(immunised = sum(immunised))|> 
+  mutate(children_with_cards = children_with_cards_df |> pull(n) |> sum())
+
+underimmunised_by_antigen_elig_mr1 <- underimmunised_by_antigen_long_clean2 |> 
+  filter(antigen %in% c("mr1") & age_cat %in% c( "elig_MR1","elig_MR2"  )) |> 
+  group_by(antigen) |> 
+  summarise(immunised = sum(immunised)) |> 
+  mutate(children_with_cards = children_with_cards_df |> 
+           filter(age_cat %in% c("elig_MR1","elig_MR2" )) |> pull(n) |> sum())
+
+underimmunised_by_antigen_elig_mr2 <- underimmunised_by_antigen_long_clean2 |> 
+  filter(antigen %in% c("mr2") & age_cat %in% c("elig_MR2" )) |> 
+  group_by(antigen) |> 
+  summarise(immunised = sum(immunised)) |> 
+ mutate(children_with_cards = children_with_cards_df |> 
+           filter(age_cat %in% c("elig_MR2" )) |> pull(n) |> sum())
+
+
+underimmunised_by_antigen_data_plot <-  bind_rows(underimmunised_by_antigen_elig_bcg_dpts, underimmunised_by_antigen_elig_mr1, underimmunised_by_antigen_elig_mr2)|> 
   mutate(antigen  = str_to_upper(antigen), 
-         number_with_cards = case_when(antigen == "BCG" ~ 740,
-                                       antigen == "DPT1" ~ 740,
-                                       antigen == "DPT3" ~ 740,
-                                       antigen == "MR1" ~ 657,
-                                       antigen == "MR2" ~ 537), 
-         underimmunised = number_with_cards - immunised ) 
-         percent_underimmunised = round((underimmunised/number_with_cards)*100, 2))
+         underimmunised = children_with_cards - immunised, 
+         percent_underimmunised = round((underimmunised/children_with_cards)*100, 2))
 ```
 
 
 ```{r}
-write_csv(underimmunised_by_antigen, "./data/underimmunised_by_antigen.csv")
+    ggplot()+
+      geom_col(data = underimmunised_by_antigen_data_plot, aes(x = antigen, y = children_with_cards),
+               fill = grey_lighter) +
+      geom_col(data = underimmunised_by_antigen_data_plot, aes(x = antigen, y = underimmunised), fill = red_dark)+
+      geom_label(data = underimmunised_by_antigen_data_plot, mapping = aes(x= antigen , y = children_with_cards, label = children_with_cards), size = 3.5 , family = "Roboto Mono", color = grey_light) +
+      geom_label(data = underimmunised_by_antigen_data_plot,
+                 mapping = aes(x= antigen , y = underimmunised, 
+                               label = glue::glue("{underimmunised}\n{percent_underimmunised}%")), 
+                               size = 3.5, family = "Roboto Mono", color = red_dark) +
+      scale_y_continuous( limits = c(0, 1200) ) +
+      labs(x = "Antigen",
+           y = "Number of doses",
+           caption = "Data source: H2H registeration 31/07/2024",
+           title = NULL,
+           subtitle = NULL)+
+  theme_stroytelling_bar()
+     
+    
+   # ggsave(filename = "unimmunised by antigen.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
+    
+```
 
+```{r}
+immunised_children <- read_csv("./data/vaccinated children by antigen.csv")
 
-underimmunised_by_antigen |> 
-  ggplot(aes(x = antigen, y = underimmunised)) +
-  geom_col() +
-  ylim(c(0, 800))+
-  geom_label(aes(label =  underimmunised)) +
-   labs(
-    y = "number of underimmunised", 
-    x = "Antigen")
+immunised_by_antigen_data_plot <- underimmunised_by_antigen_data_plot |> left_join(immunised_children) |> 
+  select(-percent_underimmunised) |> 
+   mutate(percent_immunised = round((doses_given/underimmunised)*100, 2))
+  
+ ggplot()+
+      geom_col(data = immunised_by_antigen_data_plot, aes(x = antigen, y = children_with_cards),
+               fill = grey_lighter) +
+      geom_col(data = immunised_by_antigen_data_plot, aes(x = antigen, y = underimmunised), fill = red_dark)+
+      geom_col(data = immunised_by_antigen_data_plot, aes(x = antigen, y = doses_given), fill = green_dark)+
+      geom_label(data = immunised_by_antigen_data_plot, mapping = aes(x= antigen , y = children_with_cards, label = children_with_cards), size = 3.5 , family = "Roboto Mono", color = grey_light) +
+      geom_label(data = immunised_by_antigen_data_plot, mapping = aes(x= antigen , y = underimmunised, label = underimmunised), size = 3.5 , family = "Roboto Mono", color = red_dark) +
+      geom_label(data = immunised_by_antigen_data_plot,
+                 mapping = aes(x= antigen , y = doses_given, 
+                               label = glue::glue("{doses_given}\n{percent_immunised}%")), 
+                               size = 3.5, family = "Roboto Mono", color = green_dark) +
+      scale_y_continuous( limits = c(0, 1200) ) +
+      labs(x = "Antigen",
+           y = "Number of doses",
+           caption = "Data source: H2H registeration 31/07/2024",
+           title = NULL,
+           subtitle = NULL)+
+  theme_stroytelling_bar()
 
+ #ggsave(filename = "immunised by antigen.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
 ```
 
 
@@ -213,40 +501,64 @@ underimmunised_by_antigen |>
 
 ```{r}
 data_reasons1 <- data_filtered |> 
-  filter(section6.q26_past == "no") |> 
+ # filter(section6.q26_past == "no") |> 
   select(section6.q32_3.Religious_beliefs:section6.q32_3.too_many_vaccine_injections) |> 
   summarise(across(section6.q32_3.Religious_beliefs:section6.q32_3.too_many_vaccine_injections, sum, na.rm = T)) |> pivot_longer(section6.q32_3.Religious_beliefs:section6.q32_3.too_many_vaccine_injections,names_to = "reasons",  values_to = "total") |> mutate(reasons  = str_remove(reasons, "section6.q32_3.")) |> arrange(desc(total))
   
 
 data_reasons2 <- data_filtered |> 
-  filter(q28_infor.q28 == "no") |> 
+  #filter(q28_infor.q28 == "no") |> 
   select(q28_infor.q32_2.Religious_beliefs:q28_infor.q32_2.too_many_vaccine_injections) |> 
  summarise(across(q28_infor.q32_2.Religious_beliefs:q28_infor.q32_2.too_many_vaccine_injections, sum, na.rm = T)) |> pivot_longer(q28_infor.q32_2.Religious_beliefs:q28_infor.q32_2.too_many_vaccine_injections,names_to = "reasons",  values_to = "total") |> mutate(reasons  = str_remove(reasons, "q28_infor.q32_2.")) |> arrange(desc(total))
 
 
 data_reasons3 <- data_filtered |> 
-   filter(section6.q28_card == "no") |> 
+  # filter(section6.q28_card == "no") |> 
   select(ask.q32.Religious_beliefs:ask.q32.too_many_vaccine_injections) |> 
   summarise(across(ask.q32.Religious_beliefs:ask.q32.too_many_vaccine_injections, sum, na.rm = T)) |>     pivot_longer(ask.q32.Religious_beliefs:ask.q32.too_many_vaccine_injections, names_to = "reasons",  values_to = "total") |> mutate(reasons  = str_remove(reasons, "ask.q32.")) |> arrange(desc(total))
 
-bind_rows(data_reasons1,data_reasons2, data_reasons3) |> 
+ reasons_plot_data <- bind_rows(data_reasons1,data_reasons2, data_reasons3) |> 
   group_by(reasons) |> 
   summarise(total = sum(total)) |> 
   mutate(reasons = str_replace_all(reasons, "_", " "), 
          reasons = str_replace_all(reasons, "\\.", " "),
          reasons = str_to_sentence(reasons), 
-         reasons = str_wrap(reasons, width = 35)) |> 
-  top_n(10, total) |> 
-  ggplot(aes(x = fct_reorder(reasons, total), y = total)) +
+         reasons = str_wrap(reasons, width = 35, whitespace_only = F, exdent = 0)) |> 
+  mutate(reasons = fct_lump(reasons, n = 9, w = total, other_level = "Other reasons")) |> 
+   group_by(reasons) |> 
+  summarise(total = sum(total)) |> 
+   mutate(status = case_when(total >= 40 ~ "top",.default = "low"))
+  
+  
+
+  ggplot(data  = reasons_plot_data, aes(x = fct_reorder(reasons, total), y = total, fill = status) ) +
   geom_col() +
-  geom_label(aes(label =  total))+
+   scale_fill_manual(values = c("top" = red_dark,
+                                "low" = grey_lighter))+
+  geom_label( data = reasons_plot_data |> filter(status == "top"),aes(label =  total), color = "white")+
+  geom_label( data = reasons_plot_data |> filter(status == "low"),aes(label =  total), color = "black")+
   coord_flip() +
     labs(
     x = "Reasons", 
-    y = "Number of times mentioned")
-
-
+    y = "Number of times mentioned", 
+    caption = "Data source: H2H registeration 31/07/2024") +
+  theme_classic() +
+      theme(axis.text = element_text(family = "Roboto Mono", size = 11, colour = "#888A8C"),
+            axis.ticks = element_line(colour = grey_light),
+            axis.title = element_text(family = "Roboto",  size = 15, colour = grey_light),
+            axis.line = element_line(colour = grey_light),
+            plot.caption = element_text(family = "Roboto",  size = 11, colour = grey_light),
+            legend.text = element_text(colour = grey_light),
+            legend.title = element_text(colour = grey_light, face = "bold"),
+            legend.position = "none",
+            plot.subtitle =  element_text(family = "Roboto",  size = 20, colour = grey_light),
+            plot.title  = element_text(family = "Roboto",  size = 30, colour = "#585859"))
+  
+  #ggsave(filename = "reasons for not vaccinating children.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
 ```
+
+
+
 ## How many Zero dose and under-immunised have been vaccinated during the H2H registeration (Saturady to Tuesday)
 
 **(If not what are reasons for those who have not yet vaccinated)**

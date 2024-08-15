@@ -27,14 +27,6 @@ blue_dark <- "#144673"
 red_dark <- "#852922"
 
 
-
-
-data("population_estimates")
-
-UNEPItargets::surviving_infants_0_11m(population = 21300)/12
-## 
-HF_surviving_infants 
-
 ### Mwitanzige and District performance for the last year
 
 district_sc_data <- read_csv("data/Kakumiro and Mwitanzige SC- DPT1 and MR2 FY2324.csv") |> 
@@ -203,29 +195,5 @@ zd_data_by_year <-  zd_children_cleaned |>
     
     
     
-    ggplot()+
-      geom_col(data = underimmunised_by_antigen, aes(x = antigen, y = number_with_cards), fill = grey_lighter) +
-      geom_col(data = underimmunised_by_antigen, aes(x = antigen, y = underimmunised), fill = blue_dark)+
-      geom_label(data = underimmunised_by_antigen, mapping = aes(x= antigen , y = number_with_cards, label = number_with_cards), size = 5, family = "Roboto Mono", color = grey_light) +
-      geom_label(data = underimmunised_by_antigen, mapping = aes(x= antigen , y = underimmunised, label = underimmunised), size = 5, family = "Roboto Mono", color = blue_dark) +
-      theme_classic() +
-      scale_y_continuous( limits = c(0, 800) ) +
-      labs(x = "Antigen",
-           y = "Number of underimmunised children",
-           caption = "Data source: H2H registeration 31/07/2024",
-           title = NULL,
-           subtitle = NULL) +
-      theme(axis.text = element_text(family = "Roboto Mono", size = 12, colour = "#888A8C"),
-            axis.ticks = element_line(colour = grey_light),
-            axis.title = element_text(family = "Roboto",  size = 15, colour = grey_light),
-            axis.line = element_line(colour = grey_light),
-            plot.caption = element_text(family = "Roboto",  size = 11, colour = grey_light),
-            legend.text = element_text(colour = grey_light),
-            legend.title = element_text(colour = grey_light, face = "bold"),
-            legend.position = "none",
-            plot.subtitle =  element_text(family = "Roboto",  size = 20, colour = grey_light),
-            plot.title  = element_text(family = "Roboto",  size = 30, colour = "#585859"))
-    
-    ggsave(filename = "ZD by year- Mwitanzige.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
-    
+
      
