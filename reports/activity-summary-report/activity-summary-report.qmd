@@ -128,7 +128,7 @@ district_sc_data <- read_csv("data/Kakumiro and Mwitanzige SC- DPT1 and MR2 FY23
   scale_color_manual(values = c("Mwitanzige Subcounty" = blue_dark,
                                  "Kakumiro District" = grey_dark)) + 
     scale_x_date(date_breaks = "2 months",date_labels = "%b%y",
-                 limits = c(dmy("01012022"), dmy("01072024")))+
+                 limits = c(dmy("01012022"), dmy("01042024")))+
     scale_y_continuous(labels = scales::percent_format(scale = 1,accuracy = 1), limits = c(0, NA) ) +
     labs(x = "Period",
          y = "DPT1 Coverage",
@@ -137,7 +137,7 @@ district_sc_data <- read_csv("data/Kakumiro and Mwitanzige SC- DPT1 and MR2 FY23
          subtitle = NULL) +
 theme_stroytelling_bar()
   
-#ggsave(filename = "DPT1-coverage.svg", device = "svg", width = 36, height = 18, units = "cm" )  
+ggsave(filename = "DPT1-coverage.svg", device = "svg", width = 36, height = 18, units = "cm" )  
 
 ```
 
@@ -158,8 +158,8 @@ theme_stroytelling_bar()
     scale_color_manual(values = c("Mwitanzige Subcounty" = blue_dark,
                                   "Kakumiro District" = grey_dark)) + 
     scale_x_date(date_breaks = "2 months",date_labels = "%b%y",
-                 limits = c(dmy("01012022"), dmy("01072024")))+
-    scale_y_continuous(labels = scales::percent_format(scale = 1,accuracy = 1, big.mark = ","), limits = c(0, 1500) ) +
+                 limits = c(dmy("01012022"), dmy("01042024")))+
+    scale_y_continuous(labels = scales::percent_format(scale = 1,accuracy = 1, big.mark = ","), limits = c(0, 500) ) +
     labs(x = "Period",
          y = "MR1 Coverage",
          caption = "Data source: DHIS2 07/08/2024",
@@ -167,7 +167,7 @@ theme_stroytelling_bar()
          subtitle = NULL) +
   theme_stroytelling_bar()
   
- # ggsave(filename = "MR1-coverage.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
+  ggsave(filename = "MR1-coverage.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
 ```
 
 ## MR 2 Coverage
@@ -187,8 +187,8 @@ theme_stroytelling_bar()
     scale_color_manual(values = c("Mwitanzige Subcounty" = blue_dark,
                                   "Kakumiro District" = grey_dark)) + 
     scale_x_date(date_breaks = "2 months",date_labels = "%b%y",
-                 limits = c(dmy("01012022"), dmy("01072024")))+
-    scale_y_continuous(labels = scales::percent_format(scale = 1,accuracy = 1, big.mark = ","), limits = c(0, 1500) ) +
+                 limits = c(dmy("01012022"), dmy("01042024")))+
+    scale_y_continuous(labels = scales::percent_format(scale = 1,accuracy = 1, big.mark = ","), limits = c(0, 120) ) +
     labs(x = "Period",
          y = "MR2 Coverage",
          caption = "Data source: DHIS2 07/08/2024",
@@ -196,7 +196,7 @@ theme_stroytelling_bar()
          subtitle = NULL) +
   theme_stroytelling_bar()
   
-#ggsave(filename = "MR2-coverage.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
+ggsave(filename = "MR2-coverage.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
 ```
 
 
@@ -240,7 +240,7 @@ There are `r sum(data_zd$n)` Zero dose children in identified
 
   ggplot(data = data_zd, mapping = aes(x = fct_reorder(`section2.q4_village`, n), y = n, fill = `section2.q3_parish`) ) +
   geom_col() +
-  scale_fill_manual(values = c("Kyakuterekera" = red_dark,
+  scale_fill_manual(values = c("Kyakuterekera" = blue_dark,
                                 "Ijumangabo" = grey_lighter)) + 
   coord_flip() +
   geom_label(data = data_zd |> filter(section2.q3_parish == "Kyakuterekera"), 
@@ -259,9 +259,8 @@ There are `r sum(data_zd$n)` Zero dose children in identified
 ```{r}
 zd_geospatial <- data_zd_indvidual |> select(section2.q3_parish, section2.q4_village, section2.q6_gps, section2._q6_gps_latitude, section2._q6_gps_longitude, section4.q12_hh_number, section4.q13_holdhead, section4.q14_contact, sectionfive.q16_care,sectionfive.q17_tel, sectionfive.q18_common, would.q21_child, would.q22_sex, would.q24_age_in_months,would.q23_was_born, would.q25_place,would.other1) |>
     rename("parish" = section2.q3_parish, "village" = section2.q4_village, "gps" = section2.q6_gps, "lat" = section2._q6_gps_latitude, "lon" = section2._q6_gps_longitude,"HHnum" = section4.q12_hh_number, "HHhead" = section4.q13_holdhead, "HHtel" = section4.q14_contact, "caregivers_name" = sectionfive.q16_care,"caregivers_tel" = sectionfive.q17_tel, "caregivers_common" = sectionfive.q18_common, "childs_name" = would.q21_child, "childs_sex" = would.q22_sex, "childs_age" = would.q24_age_in_months,"childs_DOB" = would.q23_was_born, "place_of_birth" = would.q25_place, "place_of_birth_other" = would.other1)
-# 
-# 
-# write_csv(zd_geospatial, "./data/geospatial-data.csv")
+
+#write_csv(zd_geospatial, "./data/geospatial-data.csv")
 ```
 
 
@@ -280,8 +279,14 @@ subcounty_zd_before <- read_csv("data/ZD in mwitanzige 2021 - 2024.csv") |>
      mutate(YOB = as.factor(year(childs_DOB)),
        age = interval(childs_DOB, dmy("31-07-2024")) %/% months(1)) |>
      filter(age >= 4) |> 
-     select(-c(HHnum, childs_name, childs_age, childs_DOB))
- 
+     select(-c(HHnum, childs_name, childs_age, childs_DOB)) |> 
+    mutate(age_group = case_when(age >= 18 ~ "18 and above ",
+                             age >= 9 ~ "9 - 17",
+                             age >= 4 ~ "4 - 8")) 
+```
+
+
+```{r}
 zd_data_by_year <-  zd_children_cleaned |> 
    count(YOB, name = "ZD_identified") |> 
    left_join( subcounty_zd_before, by = c("YOB" = "period")) 
@@ -441,6 +446,41 @@ underimmunised_by_antigen_data_plot <-  bind_rows(underimmunised_by_antigen_elig
          underimmunised = children_with_cards - immunised, 
          percent_underimmunised = round((underimmunised/children_with_cards)*100, 2))
 ```
+## Zero dose children by 
+
+```{r}
+underimmunised_by_antigen_data_plot 
+
+
+ ggplot()+
+   geom_col(data = zd_data_by_year, aes(x = YOB, y = ZD), fill = grey_lighter) +
+   geom_col(data = zd_data_by_year, aes(x = YOB, y = ZD_identified), fill = blue_dark)+
+   geom_label(data =zd_data_by_year, mapping = aes(x= YOB , y = ZD, label = ZD), size = 4, family = "Roboto Mono", color = grey_light) +
+     geom_label(data =zd_data_by_year, mapping = aes(x= YOB , y = ZD_identified, label = ZD_identified), size = 4, family = "Roboto Mono", color = blue_dark) +
+   theme_classic() +
+   geom_hline(yintercept = 0, linetype = "solid", color = "black" )+
+   scale_fill_manual(values = c("pos" = red_dark,
+                                "neg" = grey_dark)) + 
+   scale_y_continuous( limits = c(-200, 100) ) +
+   labs(x = "Year",
+        y = "Number of ZD",
+        caption = "Data source: DHIS2 & H2H registeration 07/08/2024",
+        title = NULL,
+        subtitle = NULL) +
+   theme(axis.text = element_text(family = "Roboto Mono", size = 12, colour = "#888A8C"),
+         axis.ticks = element_line(colour = grey_light),
+         axis.title = element_text(family = "Roboto",  size = 15, colour = grey_light),
+         axis.line = element_line(colour = grey_light),
+         plot.caption = element_text(family = "Roboto",  size = 11, colour = grey_light),
+         legend.text = element_text(colour = grey_light),
+         legend.title = element_text(colour = grey_light, face = "bold"),
+         legend.position = "none",
+         plot.subtitle =  element_text(family = "Roboto",  size = 20, colour = grey_light),
+         plot.title  = element_text(family = "Roboto",  size = 30, colour = "#585859"))
+```
+
+
+
 
 
 ```{r}
@@ -455,14 +495,14 @@ underimmunised_by_antigen_data_plot <-  bind_rows(underimmunised_by_antigen_elig
                                size = 3.5, family = "Roboto Mono", color = red_dark) +
       scale_y_continuous( limits = c(0, 1200) ) +
       labs(x = "Antigen",
-           y = "Number of doses",
+           y = "Number of children",
            caption = "Data source: H2H registeration 31/07/2024",
            title = NULL,
            subtitle = NULL)+
   theme_stroytelling_bar()
      
     
-   # ggsave(filename = "unimmunised by antigen.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
+  #  ggsave(filename = "unimmunised by antigen.svg", device = "svg", width = 36, height = 18, units = "cm" ) 
     
 ```
 
@@ -486,7 +526,7 @@ immunised_by_antigen_data_plot <- underimmunised_by_antigen_data_plot |> left_jo
                                size = 3.5, family = "Roboto Mono", color = green_dark) +
       scale_y_continuous( limits = c(0, 1200) ) +
       labs(x = "Antigen",
-           y = "Number of doses",
+           y = "Number of children",
            caption = "Data source: H2H registeration 31/07/2024",
            title = NULL,
            subtitle = NULL)+

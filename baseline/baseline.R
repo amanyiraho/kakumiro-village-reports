@@ -82,8 +82,8 @@ district_sc_data <- read_csv("data/Kakumiro and Mwitanzige SC- DPT1 and MR2 FY23
     scale_color_manual(values = c("Mwitanzige Subcounty" = blue_dark,
                                   "Kakumiro District" = grey_dark)) + 
     scale_x_date(date_breaks = "month",date_labels = "%b%y",
-                 limits = c(dmy("01072023"), dmy("01072024")))+
-    scale_y_continuous(labels = scales::percent_format(scale = 1,accuracy = 1, big.mark = ","), limits = c(0, 1500) ) +
+                 limits = c(dmy("01072023"), dmy("01042024")))+
+    scale_y_continuous(labels = scales::percent_format(scale = 1,accuracy = 1, big.mark = ","), limits = c(0, 500) ) +
     labs(x = "Period",
          y = "MR1 Coverage",
          caption = "Data source: DHIS2 07/08/2024",

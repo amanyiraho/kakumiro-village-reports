@@ -1,0 +1,16 @@
+---
+title: "Geospatial data"
+format: docx
+---
+
+```{r}
+
+setwd("C:/Users/Gk Coordinator/Desktop/r-projects/kakumiro-village-reports/reports/activity-summary-report/")
+
+library(tidyverse)
+```
+
+```{r}
+
+```
+
